@@ -6,20 +6,54 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    
+    
 spec:
+  tls:
+    - hosts:
+        - examples-demo.com
+        - www.examples-demo.com
+      secretName: examples-demo.com
   rules:
-  - host: Hostname
+  - host: examples-demo.com
     http:
         paths:
-          - path: /abc/(.*)
+          - path: "/"
             backend:
               service:
                 name: client-cluster-ip-service
                 port:
-                  number: 1111
-          - path: /xyz/ (. *)
+                  number: 3000
+          - path: "/"
             backend:
               service:
                 name: server-cluster-ip-service
                 port:
-                  number: 2222
+                  number: 5000
+  - host: www.examples-demo.com
+    http:
+        paths:
+          - path: "/"
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: client-cluster-ip-service
+                port:
+                  number: 3000
+          - path: "/"
+            # UPDATE PATH
+            pathType: Prefix
+            # ADD PATHTYPE
+            backend:
+              service:
+                # UPDATE SERVICE FIELDS
+                name: server-cluster-ip-service
+                port:
+                  number: 5000            
+                  
+                  
